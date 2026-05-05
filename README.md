@@ -76,3 +76,13 @@ Az alacsonyabb frekvenciának meghagytam az 1,25MHz-et a hardware kiépítése m
 | Csapvíz | 2124 | 2605 |
 | Híg tápoldat | 2108 | 2666 |
 | Dús tápoldat | 2108 | 2651 |
+
+Észrevételek a méréssel kapcsolatban: 
+
+
+## Véglegesített kapcsolási rajz
+
+![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG)
+
+
+Folytatása következik...
