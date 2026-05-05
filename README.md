@@ -70,6 +70,7 @@ Az alacsonyabb frekvenciának meghagytam az 1,25MHz-et a hardware kiépítése m
 #### Végleges deszkamodellel mért nyers ADC értékek, frekvenciánként 20 egymásutáni mérés átlagai
 
 | tesztminta / frekvencia | 1,25MHz | 40MHz |
+|------|----------|-----|
 | Levegő | 3786 | 4095 |
 | Ioncserélt víz | 2442 | 2645 |
 | Csapvíz | 2124 | 2605 |
