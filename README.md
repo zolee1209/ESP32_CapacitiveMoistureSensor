@@ -1,1 +1,1 @@
-# Kapacitív talajszonda készítése és illesztése meglévő rendszerhez
+# Kapacitív talajszonda készítése és illesztése meglévő adatgyűjtő rendszerhez
