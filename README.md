@@ -1,1 +1,1 @@
-# ESP32_CapacitiveMoistureSensor
+# Kapacitív talajszonda készítése és illesztése meglévő rendszerhez
