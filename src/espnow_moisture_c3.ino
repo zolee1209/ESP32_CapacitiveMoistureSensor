@@ -1,10 +1,5 @@
 /*
- * espnow_adc_c3.ino
  * Target: ESP32-C3 @ 80 MHz  (Arduino framework, ESP32 Arduino core 3.x)
- *
- * ═══════════════════════════════════════════════════════════════════════════
- * ESP-NOW slave that performs three ADC measurements and sends them to the
- * master node, then enters deep sleep.
  *
  * HARDWARE:
  *   GPIO 1  – voltage divider pull-down switch (output LOW during measurement)
@@ -26,14 +21,14 @@
  *   BEFORE WiFi/ESP-NOW is initialised to ensure reliable ADC2 readings.
  *
  * WAKE CYCLE (everything in setup(), deep sleep at end):
- *  1. LED on  (active-low → LOW)
- *  2. ADC init
- *  3. Voltage divider: GPIO1 → output LOW, sample GPIO2 ADC1_CH2    → tartalek[0]
- *  4. Phase A: 40 MHz on GPIO6, sample GPIO5 ADC2_CH0               → tartalek[1]
- *  5. Phase B: 1.25 MHz on GPIO7, sample GPIO5 ADC2_CH0             → tartalek[2]
+ *  1. ADC init
+ *  2. Voltage divider: GPIO1 → output LOW, sample GPIO2 ADC1_CH2    → tartalek[0]
+ *  3. Phase A: 40 MHz on GPIO6, sample GPIO5 ADC2_CH0               → tartalek[1]
+ *  4. Phase B: 1.25 MHz on GPIO7, sample GPIO5 ADC2_CH0             → tartalek[2]
+ *  5. LED on  (active-low → LOW)
  *  6. WiFi STA + ESP-NOW init, add peer, fill struct, send
  *  7. Wait for send callback (max 500 ms)
- *  8. LED off, deep sleep (10 s)
+ *  8. LED off, deep sleep (60 s)
  *
  * DATA STRUCT (must match master):
  *   id[6]          – sender MAC address
@@ -46,8 +41,8 @@
  *   tartalek[3..11]– 0.0
  *
  * LEDC (APB 80 MHz):
- *   40 MHz:   80e6 / (40e6   × 2)  = 1 → 1-bit, duty=1   ✓ exact
- *   1.25 MHz: 80e6 / (1.25e6 × 64) = 1 → 6-bit, duty=32  ✓ exact
+ *   40 MHz:   80e6 / (40e6   × 2)  = 1 → 1-bit, duty=1
+ *   1.25 MHz: 80e6 / (1.25e6 × 64) = 1 → 6-bit, duty=32
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -79,32 +74,15 @@ static const uint32_t DELAY_AFTER_START_MS = 100;
 static const uint32_t DELAY_BETWEEN_MS     = 500;
 
 // ── Master MAC address ────────────────────────────────────────────────────────
-// Kommenteld ki azt, amelyik NEM az aktuális Master eszközöd.
-
-// 1. lehetőség:
 uint8_t kozpontMAC[] = {0xA8, 0x42, 0xE3, 0x4B, 0x7F, 0x34};
 
-// 2. lehetőség:
-// uint8_t kozpontMAC[] = {0xA8, 0x42, 0xE3, 0x55, 0xD4, 0x1C};
-
-// 3. lehetőség:
-// uint8_t kozpontMAC[] = {0x30, 0xC6, 0xF7, 0x05, 0x35, 0xDC};
-
 // ── TX power ──────────────────────────────────────────────────────────────────
-// Pontosan EGY sor legyen aktív (komment nélkül), a többi legyen kommentezve!
-// Az esp_wifi_set_max_tx_power() értéke 0.25 dBm egységekben értendő.
-//
-// Legalacsonyabb teljesítmény (~2 dBm):
 // #define TX_POWER_VALUE   8    //  8 * 0.25 =  2.0 dBm
-// Közepes teljesítmény (~10 dBm):
 // #define TX_POWER_VALUE  40    // 40 * 0.25 = 10.0 dBm
-// Közepes teljesítmény (~15 dBm) – DEFAULT:
  #define TX_POWER_VALUE  60    // 60 * 0.25 = 15.0 dBm
-// Maximális teljesítmény (~20 dBm):
 // #define TX_POWER_VALUE  80    // 80 * 0.25 = 20.0 dBm
 
 // ── Deep sleep duration ───────────────────────────────────────────────────────
-// Teszteléshez: 10 másodperc. Éles használathoz: pl. 10ULL * 60 * 1000000ULL
 #define TIME_TO_SLEEP_US  (10ULL * 6 * 1000000ULL)
 
 // ── Data struct (must match master) ──────────────────────────────────────────
@@ -257,7 +235,7 @@ void setup()
     //delay(DELAY_BETWEEN_MS);
 
     // ── Phase A: 40 MHz on GPIO6 ─────────────────────────────────────────────
-    // 80 MHz APB / 2 (1-bit) = 40 000 000 Hz exactly
+    // 80 MHz APB / 2 (1-bit) = 40 000 000 Hz
     ledc_sq_start(LEDC_TIMER_A, LEDC_CHAN_A, PIN_SQ_A, 40000000UL, LEDC_TIMER_1_BIT);
     delay(DELAY_AFTER_START_MS);
     int avgA = averageSamplesADC2(ADC_SAMPLES);
@@ -265,7 +243,7 @@ void setup()
     delay(DELAY_BETWEEN_MS);
 
     // ── Phase B: 1.25 MHz on GPIO7 ───────────────────────────────────────────
-    // 80 MHz APB / 64 (6-bit) = 1 250 000 Hz exactly
+    // 80 MHz APB / 64 (6-bit) = 1 250 000 Hz
     // Re-warmup ADC2: ~1100 ms elapsed since adc2_init_ch0(); Phase A LEDC noise
     // may have shifted the ADC2 bias. Re-initialise to restore stable baseline.
     adc2_init_ch0();
@@ -277,7 +255,8 @@ void setup()
 
     
     digitalWrite(LED_PIN, LOW);
-    // ── WiFi + ESP-NOW (after all ADC work) ──────────────────────────────────
+
+    // ── WiFi + ESP-NOW ──────────────────────────────────
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
     //delay(100);
@@ -313,15 +292,16 @@ void setup()
     // ── Send ─────────────────────────────────────────────────────────────────
     esp_now_send(kozpontMAC, (uint8_t *)&kuldendoAdat, sizeof(kuldendoAdat));
 
-    // Wait for send callback (timeout: 500 ms)
+    // Wait for send callback
      unsigned long start = millis();
     while (!kuldesiKesz && (millis() - start < 500)) {
         delay(10);
     }
     
 
-    // ── Deep sleep ───────────────────────────────────────────────────────────
     digitalWrite(LED_PIN, HIGH);   // LED off before sleep
+
+    // ── Deep sleep ───────────────────────────────────────────────────────────
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP_US);
     esp_deep_sleep_start();
     // Execution never reaches here – device resets and setup() runs again
