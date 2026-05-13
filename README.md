@@ -22,7 +22,7 @@ A szenzorral szemben támasztott elvárásom, miszerint az legyen tartós, az eg
 ### Hogyan működik ez a szenzortípus?
 A NYÁK-on létrehozott kiterített fegyverzetek és a forrasztásgátló maszk mint dielektrikum, egy kondenzátort alkotnak. Hogy ez a kondenzátor mekkora kapacitással bír, az függ a fegyverzetek méretétől, a közöttük lévő távolságtól és a dielektromos állandótól. Ezt a dielektromos állandót ($ \epsilon_r$) hangolja el a környezet, jelen esetben a talaj és annak nedvességtartalma. 
 
-$ C = \epsilon_r \epsilon_0 \frac{A}{d}$ 
+$$C = \epsilon_r \epsilon_0 \frac{A}{d}$$
 
 Ennek a kapacitásnak a mérését, vagy annak értékére való következtetést többféleképpen is megtehetjük. Egyik ilyen mérési elv részletesebb leírása a következő linken olvasható: [https://lastminuteengineers.com/capacitive-soil-moisture-sensor-arduino/](https://lastminuteengineers.com/capacitive-soil-moisture-sensor-arduino/) A továbbiakban én is ezzel a metódussal fogok dolgozni.
 
