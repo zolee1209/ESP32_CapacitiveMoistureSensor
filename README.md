@@ -20,7 +20,7 @@ A szenzorral szemben támasztott elvárásom, miszerint az legyen tartós, az eg
 [https://raspberrypi.stackexchange.com/questions/68133/is-soil-moisture-sensor-corrosion-normal](https://raspberrypi.stackexchange.com/questions/68133/is-soil-moisture-sensor-corrosion-normal)
 
 ### Hogyan működik ez a szenzortípus?
-A NYÁK-on létrehozott kiterített fegyverzetek és a forrasztásgátló maszk mint dielektrikum, egy kondenzátort alkotnak. Hogy ez a kondenzátor mekkora kapacitással bír, az függ a fegyverzetek méretétől, a közöttük lévő távolságtól és a dielektromos állandótól. Ezt a dielektromos állandót ($ \epsilon_r$) hangolja el a környezet, jelen esetben a talaj és annak nedvességtartalma. 
+A NYÁK-on létrehozott kiterített fegyverzetek és a forrasztásgátló maszk mint dielektrikum, egy kondenzátort alkotnak. Hogy ez a kondenzátor mekkora kapacitással bír, az függ a fegyverzetek méretétől, a közöttük lévő távolságtól és a dielektromos állandótól. Ezt a dielektromos állandót ($$ \epsilon_r$$) hangolja el a környezet, jelen esetben a talaj és annak nedvességtartalma. 
 
 $$C = \epsilon_r \epsilon_0 \frac{A}{d}$$
 
