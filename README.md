@@ -97,3 +97,19 @@ Ez lehetővé teszi a modulok szükséges mértékű rögzítését és elválas
 Kapott még egy kupakot, így növelve kicsit az elektronika víz elleni védettségét.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/4_final_form.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/4_final_form.jpg)
 
+## A software működése
+
+A software működéséről vázlatosan írok csak, a teljes software a [src mappában](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/tree/main/src) található, Arduino IDE-vel a céleszközre tölthető.
+
+- Az eszköz induláskor / ébredéskor elvégzi a használt ADC-k beállítását, a használt GPIO-kat bemenetre állítja a Built-in LED kivételével, ez output lesz.
+- Alacsony szintű kimenetre állítja GPIO1-et ezzel aktiválva a tápfeszültség feszültségosztóját. Vesz 20 ADC mintát, ennek átlagát eltárolja, majd visszaállítja GPIO1-et bemenetté. Ebben a lépésben mérjük meg a tápfeszültséget, mert itt még alacsony az áramkör fogyasztása, az akkumulátor feszültségére való ráhatás itt a legkisebb.
+- GPIO6-ot kimenetre állítja és elindítja a 40MHz-es négyszögjel generálását. Vár 100ms-ot, hogy C1 feltöltődjön. Vesz 20 ADC mintát, ennek átlagát eltárolja, majd visszaállítja GPIO6-ot bemenetté. Vár még 500ms-ot, hogy R4 kellően kisüsse C1-et a következő méréshez.
+- GPIO7-et kimenetre állítja és elindítja az 1,25MHz-es négyszögjel generálását. Vár 100ms-ot, hogy C1 feltöltődjön. Vesz 20 ADC mintát, ennek átlagát eltárolja, majd visszaállítja GPIO7-et bemenetté. Vár még 500ms-ot, hogy R4 kellően kisüsse C1-et a következő méréshez.
+- Alacsony szintre húzza GPIO8-at, ezzel bekapcsolva a panelen lévő kék LED-et.
+- Bekapcsolja a WiFi-t, majd ESP-now segítségével elküldi a 3 eltárolt mérési értéket a központi ESP-nek.
+- Magas szintre állítja GPIO9-at, ezzel kikapcsolva a kék LED-et.
+- Beállítja az alváshoz tartozó időzítőt 60 másodpercre, majd elmegy mélyalvásba. Az időzítő lejárta után az eszköz felébred és az első ponttól folytatja a végrehajtást.
+
+#### A központ...
+A központon vevőként funkcionáló ESP sorosporton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
+![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png)
