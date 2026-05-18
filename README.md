@@ -56,7 +56,7 @@ Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan pá
 
 #### De akkor hogyan tovább?
 - Ha elhagyom a diódát (illetve az integrátor R-C tagot) és nyersen mintavételezem az aluláteresztő- szűrőt, akkor illene tennem egy impedancia- illesztő buffer fokozatot, SW-ben kell megoldanom az integrálást, cserébe növekszik a mérési tartományom, mert elmarad a diódán a feszültségesés. 
-- A NYÁK-on lévő érzékelőfelület csekély, kapacitása levegőn 15pF körüli, folyadékba merítve is 300pF környéki értéket vesz fel. Várhatóan talajban a két érték között vesz fel maximum a kontaktfelület miatt. Az eredeti meghajtó frekvencia az 555-tel 1,5MHz környékén volt, ez az alkalmazott 10k soros ellenállással megfelelő összeállítás.
+- A NYÁK-on lévő érzékelőfelület csekély, kapacitása levegőn 15pF körüli, folyadékba merítve is 300pF környéki értéket vesz fel. Várhatóan talajban a két érték között vesz fel maximum a kontaktfelület tökéletlensége miatt. Az eredeti meghajtó frekvencia az 555-tel 1,5MHz környékén volt, ez az alkalmazott 10k soros ellenállással megfelelő összeállítás.
 - Az ESP ADC-je maximum ~100kSPS sebességgel képes mintavételezni, ez viszont rendkívül alacsony ahhoz, hogy meg tudjam mérni az RC-szűrt négyszögjelet. [https://www.allaboutcircuits.com/technical-articles/nyquist-shannon-theorem-understanding-sampled-systems/](https://www.allaboutcircuits.com/technical-articles/nyquist-shannon-theorem-understanding-sampled-systems/)
 - **Viszont:** Ha az ESP-vel állítom elő a négyszögjelet, akkor tudom, hogy mikor indult a négyszögjel! És ehhez tudok szinkronizálni. A processzor képes 160MHz-en futni, ami azt jelenti, hogy egészen apró lépésekben a szinkrontól eltolva "végigtapogathatnám" a mérendő jelet más-más periódusba mintavételezve. Mivel a mérendő jel periodikus, az eredeti hullámforma visszaállítható több periódus felhasználásával, így ez egy lehetséges alternatíva. Az alkalmazott metódus neve: [Equivalent Time Sampling - ETS](https://wiki.analog.com/university/tools/m1k/alice/advanced-equivalent-time-sampling-guide)
 - Plot twist: Nem működik! :D Az ESP ADC-je nem rendelkezik kellő analóg sávszélességgel, így a négyszögjel rekonstruálása ezen a frekvencián nem volt lehetséges. ~500kHz-ig volt felismerhető, hogy az ESP-vel négyszögjelet generáltam eredetileg. Ennek dokumentációja elmaradt.
@@ -77,12 +77,17 @@ Az alacsonyabb frekvenciának meghagytam az 1,25MHz-et a hardware kiépítése m
 | Híg tápoldat | 2108 | 2666 |
 | Dús tápoldat | 2108 | 2651 |
 
-Észrevételek a méréssel kapcsolatban: 
-
 
 ## Véglegesített kapcsolási rajz
 
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG)
 
 
-Folytatása következik...
+Szerettem volna a tényleges akkumulátor feszültséget mérni, viszont az ehhez szükséges extra alktrészek légszerelésével jelenleg nem akartam időt tölteni. A tápfeszültség ellenőrzése a következőképpen történik: A Li-ion akkumulátor a panel 5V-os tápbemenetére csatlakozik. Ezen van egy [3,3V-os ME6211](https://stm32-base.org/assets/pdf/regulators/ME6211.pdf) feszültségstabilizátor amely rendkívül alacsony, 0,1V-os dropouttal rendelkezik. Ez azt jelenti, hogy ha az akkumulátor feszültsége leesik 3,4V-ra, akkor a feszültségstabilizátor képes még a kimenetén biztosítani a 3,3V-os feszültséget. Ezután ahogy csökken az akku feszültsége, a stabilizátor kimenetén is esni fog a feszültség. Ezt a feszültséget mérjük egy kapcsolható feszültségosztón át, ami a panelre integrált és hozzáadott 10k ellenállásból épül fel. Az eddigi tapasztalatok alapján az így mért feszültségnek kisebb, mint 15LSB változása van. Ez a környező zajokból és az alkatrészek hőmérséklet- függéséből tevődik össze. Várhatóan, ha a stabilizátor kimenete 50mV-ot bezuhan az akkumulátor merülése miatt, a jelenleg mért értékek ~100-zal csökkenni fognak, így jól detektálható a kritikus tápfeszültség megléte.
+
+## Építés
+
+A deszkamodell maradt a végleges forma, az extra alkatrészek a panelre lettek építve.
+
+![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/1_ESP32-C3_supermini_closeup.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/1_ESP32-C3_supermini_closeup.jpg)
+
