@@ -94,3 +94,6 @@ Az áramkörnek terveztem, majd 3D nyomtattam egy egymásba csúsztatható burko
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/2_assembly.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/2_assembly.jpg)
 Ez lehetővé teszi a modulok szükséges mértékű rögzítését és elválasztását.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/3_assembly.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/3_assembly.jpg)
+Kapott még egy kupakot, így növelve kicsit az elektronika víz elleni védettségét.
+![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/4_final_form.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/4_final_form.jpg)
+
