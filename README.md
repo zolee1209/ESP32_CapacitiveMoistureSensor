@@ -88,6 +88,5 @@ Szerettem volna a tényleges akkumulátor feszültséget mérni, viszont az ehhe
 ## Építés
 
 A deszkamodell maradt a végleges forma, az extra alkatrészek a panelre lettek építve.
-
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/1_ESP32-C3_supermini_closeup.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/1_ESP32-C3_supermini_closeup.jpg)
 
