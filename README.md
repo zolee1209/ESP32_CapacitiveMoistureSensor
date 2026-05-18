@@ -79,14 +79,11 @@ Az alacsonyabb frekvenciának meghagytam az 1,25MHz-et a hardware kiépítése m
 
 
 ## Véglegesített kapcsolási rajz
-
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG)
-
 
 Szerettem volna a tényleges akkumulátor feszültséget mérni, viszont az ehhez szükséges extra alktrészek légszerelésével jelenleg nem akartam időt tölteni. A tápfeszültség ellenőrzése a következőképpen történik: A Li-ion akkumulátor a panel 5V-os tápbemenetére csatlakozik. Ezen van egy [3,3V-os ME6211](https://stm32-base.org/assets/pdf/regulators/ME6211.pdf) feszültségstabilizátor amely rendkívül alacsony, 0,1V-os dropouttal rendelkezik. Ez azt jelenti, hogy ha az akkumulátor feszültsége leesik 3,4V-ra, akkor a feszültségstabilizátor képes még a kimenetén biztosítani a 3,3V-os feszültséget. Ezután ahogy csökken az akku feszültsége, a stabilizátor kimenetén is esni fog a feszültség. Ezt a feszültséget mérjük egy kapcsolható feszültségosztón át, ami a panelre integrált és hozzáadott 10k ellenállásból épül fel. Az eddigi tapasztalatok alapján az így mért feszültségnek kisebb, mint 15LSB változása van. Ez a környező zajokból és az alkatrészek hőmérséklet- függéséből tevődik össze. Várhatóan, ha a stabilizátor kimenete 50mV-ot bezuhan az akkumulátor merülése miatt, a jelenleg mért értékek ~100-zal csökkenni fognak, így jól detektálható a kritikus tápfeszültség megléte.
 
 ## Építés
-
 A deszkamodell maradt a végleges forma, az extra alkatrészek a panelre lettek építve.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/1_ESP32-C3_supermini_closeup.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/1_ESP32-C3_supermini_closeup.jpg)
 
@@ -98,7 +95,6 @@ Kapott még egy kupakot, így növelve kicsit az elektronika víz elleni védett
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/4_final_form.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/4_final_form.jpg)
 
 ## A software működése
-
 A software működéséről vázlatosan írok csak, a teljes software a [src mappában](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/tree/main/src) található, Arduino IDE-vel a céleszközre tölthető.
 
 - Az eszköz induláskor / ébredéskor elvégzi a használt ADC-k beállítását, a használt GPIO-kat bemenetre állítja a Built-in LED kivételével, ez output lesz.
@@ -113,3 +109,11 @@ A software működéséről vázlatosan írok csak, a teljes software a [src map
 ###### A központon vevőként funkcionáló ESP sorosporton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png)
 ###### | Lila: 40MHz-en mért érték | Sárga: 1,25MHz-en mért érték | Cián: Tápfeszültség
+
+
+## Beavatkozás a mért adatok alapján
+A szenzor software-be szándékosan nem kerültek kalibrációs funkciók.
+- Ennek egyik oka, hogy abban az esetben a kalibrációs folyamatot is meg kellett volna oldani szenzor oldalon, ami a vízállóság biztosítására hivatott burkolást nehezítette volna, ha nyomógombot alkalmazok. Lehetett volna alkalmazni mágnest és HALL szenzort egy pin beállítására, de az egyedi NYÁK hiánya miatt ezt elvetettem. Mivel az ESP-now kétirányú, az adatok elküldése után várhatok is vissza valamilyen értéket és annak függvényében irányítani a kalibrációs folyamatot. 
+- A másik ok, hogy a szenzor minden esetben egyedi helyre kerül. Lehet eltérő a talaj összetétele, minősége és tömörsége, így minden esetben szükséges az újrakalibráció. Viszont - ahogy esetemben is - a talaj tömörségének változása is hatással van a mért értékre. A tömörödés során változik a hasznos szenzorfelület és az aktív szenzorfelülettel kapcsolatban lévő talaj viszonya is, így nem határozható meg egy egzakt kapcsolási pont.
+
+Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fogom meghatározni, ott egyszerűbb ezt megvalósítani. Néhány öntözési ciklus után meg lehet határozni a növény számára optimális nedvességi értéket, majd azt automatikával tartani. Az öntözés megvalósítása egyelőre optikai visszacsatoláson alapszik: a monitoron, vagy a virágföldön látottak alapján :smile: .
