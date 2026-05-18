@@ -110,6 +110,6 @@ A software működéséről vázlatosan írok csak, a teljes software a [src map
 - Magas szintre állítja GPIO9-at, ezzel kikapcsolva a kék LED-et.
 - Beállítja az alváshoz tartozó időzítőt 60 másodpercre, majd elmegy mélyalvásba. Az időzítő lejárta után az eszköz felébred és az első ponttól folytatja a végrehajtást.
 
-#### A központ...
-A központon vevőként funkcionáló ESP sorosporton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
+###### A központon vevőként funkcionáló ESP sorosporton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png)
+###### | Lila: 40MHz-en mért érték | Sárga: 1,25MHz-en mért érték | Cián: Tápfeszültség
