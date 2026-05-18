@@ -106,6 +106,8 @@ A software működéséről vázlatosan írok csak, a teljes software a [src map
 - Magas szintre állítja GPIO9-at, ezzel kikapcsolva a kék LED-et.
 - Beállítja az alváshoz tartozó időzítőt 60 másodpercre, majd elmegy mélyalvásba. Az időzítő lejárta után az eszköz felébred és az első ponttól folytatja a végrehajtást.
 
+Ezzel a működéssel a szenzor átlagfogyasztása 500µA környékén alakul, a használt 600mAh-s akkumulátorral várhatóan 2 hónapot tud üzemelni.
+
 ###### A központon vevőként funkcionáló ESP sorosporton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png)
 ###### | Lila: 40MHz-en mért érték | Sárga: 1,25MHz-en mért érték | Cián: Tápfeszültség
@@ -117,3 +119,25 @@ A szenzor software-be szándékosan nem kerültek kalibrációs funkciók.
 - A másik ok, hogy a szenzor minden esetben egyedi helyre kerül. Lehet eltérő a talaj összetétele, minősége és tömörsége, így minden esetben szükséges az újrakalibráció. Viszont - ahogy esetemben is - a talaj tömörségének változása is hatással van a mért értékre. A tömörödés során változik a hasznos szenzorfelület és az aktív szenzorfelülettel kapcsolatban lévő talaj viszonya is, így nem határozható meg egy egzakt kapcsolási pont.
 
 Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fogom meghatározni, ott egyszerűbb ezt megvalósítani. Néhány öntözési ciklus után meg lehet határozni a növény számára optimális nedvességi értéket, majd azt automatikával tartani. Az öntözés megvalósítása egyelőre optikai visszacsatoláson alapszik: a monitoron, vagy a virágföldön látottak alapján :smile: .
+
+## Fejlesztési lehetőségek
+- Egyedi NYÁK-terv:
+    - Nagyobb szenzorfelület, vagy több zóna létrehozása.
+    - A használt alkatrészek korrekt elhelyezése, figyelembe véve az alkalmazott frekvenciákat.
+    - Napelemes tápláláshoz szükséges DC-DC konverter kiépítése.
+    - Szükség esetén a szenzor felület meghajtásának erősítése külső tranzisztorokkal.
+    - Külső nagysebességű ADC alkalmazása diódás egyenirányító helyett.
+    - LED / LED-ek optimális elhelyezése, hogy a szenzor végén lévő áttetsző részen több fény jusson ki.
+
+- Burkolat:
+    - Más összeszerelési struktúra tömítésekkel, ami jobban véd a nedvesség ellen.
+    - Párakicsapódás elleni védelem.
+
+- Software
+    - Hosszabb alvási idő / rikább mérési ciklus.
+    - Műszeres bemérés után a várakozási idők optimalizálása, ébrenléti idő csökkentése.
+    - Központ MAC cím változtatásának megoldása vezeték nélkül.
+    - Kimenő adatok titkosítása.
+    - Központi oldalon védekezés a hamisított adatok ellen.
+
+    ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/5_in_service.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/5_in_service.jpg)
