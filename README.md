@@ -33,7 +33,7 @@ Választható alternatíva lett volna még a saját NYÁK tervezése annak minde
 
 ## Hogyan lehet a szenzor vezeték nélküli, és alacsony fogyasztású?
 
-Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan párszáz µA/MHz aktív üzemmódban, ezt még befolyásolhatják az egyéb használatban lévő perifériák. Viszont telepes üzemeltetéskor már jelentős fogyasztóvá válhat a mikrovezérlő és minden a telepre kötött pár mA-es áramfelvétellel rendelkező szenzor, modul is.
+Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan párszáz µA/MHz aktív üzemmódban, ezt még befolyásolhatják az egyéb használatban lévő perifériák. Viszont telepes üzemeltetéskor már jelentős fogyasztóvá válhat a mikrovezérlő és minden, a telepre kötött pár mA-es áramfelvétellel rendelkező szenzor, modul is.
 
 ### Mi a fogyasztás csökkentésének stratégiája?
 - A mikrovezérlőn válasszunk optimális órajelet. Ha a feladathoz elégséges és van lehetőség alacsonyabb órajelet választani, tegyük azt.
@@ -49,13 +49,13 @@ Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan pá
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/0_electrical_components.jpg](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/0_electrical_components.jpg)
 
 ## Első észrevételek és a nyúl üregének mélysége
-- Olyan verziót kaptam a talajszenzorból, ami rendelkezik feszültség- stabilizátorral, nem megfelelő szériás 555-ös IC van rajta és hibás a panelterv, vagyis mindenképp hozzá kell nyúlni.
-- Miért gond, hogy rendelkezik a szenzor feszültség- stabilizátorral? Az energiahatékonysági célhoz igazodva, terv szerint az ESP32 GPIO-ja szolgáltatja a szenzor tápfeszültségét. Ez 3,3V lenne. Viszont a feszültség- stabilizátoron mindenképp esik pár tized V, így az [NE555](https://www.ti.com/lit/ds/symlink/ne555.pdf) semmiképp nem kap elegendő feszültséget a stabil működéshez.
+- Olyan verziót kaptam a talajszenzorból, ami rendelkezik feszültségstabilizátorral, nem megfelelő szériás 555-ös IC van rajta és hibás a panelterv, vagyis mindenképp hozzá kell nyúlni.
+- Miért gond, hogy rendelkezik a szenzor feszültségstabilizátorral? Az energiahatékonysági célhoz igazodva, terv szerint az ESP32 GPIO-ja szolgáltatja a szenzor tápfeszültségét. Ez 3,3V lenne. Viszont a feszültségstabilizátoron mindenképp esik pár tized V, így az [NE555](https://www.ti.com/lit/ds/symlink/ne555.pdf) semmiképp nem kap elegendő feszültséget a stabil működéshez.
 - Megfontolandó, hogy a diódás csúcs- egyenirányító pozíciójában alkalmazott ismeretlen típus sem a legmegfelelőbb esetleg. Az itt eső feszültség csökkenti a szenzor mérési tartományát.
 - **Konklúzió:** Amennyit szükséges lenne foglalkozni a szenzor NYÁK-kal, hogy tesztelni tudjam "eredeti" formájában, akár le is takaríthatnám róla az összes alkatrészt. Az ESP egyébként is tud négyszögjelet generálni.
 
 #### De akkor hogyan tovább?
-- Ha elhagyom a diódát (illetve az integrátor R-C tagot) és nyersen mintavételezem az aluláteresztő- szűrőt, akkor illene tennem egy impedancia- illesztő buffer fokozatot, SW-ben kell megoldanom az integrálást, cserébe növekszik a mérési tartományom, mert elmarad a diódán a feszültségesés. 
+- Ha elhagyom a diódát (illetve az integrátor R-C tagot) és nyersen mintavételezem az aluláteresztőszűrőt, akkor illene tennem egy impedanciaillesztő buffer fokozatot, SW-ben kell megoldanom az integrálást, cserébe növekszik a mérési tartományom, mert elmarad a diódán a feszültségesés. 
 - A NYÁK-on lévő érzékelőfelület csekély, kapacitása levegőn 15pF körüli, folyadékba merítve is 300pF környéki értéket vesz fel. Várhatóan talajban a két érték között vesz fel maximum a kontaktfelület tökéletlensége miatt. Az eredeti meghajtó frekvencia az 555-tel 1,5MHz környékén volt, ez az alkalmazott 10k soros ellenállással megfelelő összeállítás.
 - Az ESP ADC-je maximum ~100kSPS sebességgel képes mintavételezni, ez viszont rendkívül alacsony ahhoz, hogy meg tudjam mérni az RC-szűrt négyszögjelet. [https://www.allaboutcircuits.com/technical-articles/nyquist-shannon-theorem-understanding-sampled-systems/](https://www.allaboutcircuits.com/technical-articles/nyquist-shannon-theorem-understanding-sampled-systems/)
 - **Viszont:** Ha az ESP-vel állítom elő a négyszögjelet, akkor tudom, hogy mikor indult a négyszögjel! És ehhez tudok szinkronizálni. A processzor képes 160MHz-en futni, ami azt jelenti, hogy egészen apró lépésekben a szinkrontól eltolva "végigtapogathatnám" a mérendő jelet más-más periódusba mintavételezve. Mivel a mérendő jel periodikus, az eredeti hullámforma visszaállítható több periódus felhasználásával, így ez egy lehetséges alternatíva. Az alkalmazott metódus neve: [Equivalent Time Sampling - ETS](https://wiki.analog.com/university/tools/m1k/alice/advanced-equivalent-time-sampling-guide)
@@ -127,6 +127,7 @@ Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fo
     - Napelemes tápláláshoz szükséges DC-DC konverter kiépítése.
     - Szükség esetén a szenzor felület meghajtásának erősítése külső tranzisztorokkal.
     - Külső nagysebességű ADC alkalmazása diódás egyenirányító helyett.
+    - OPA-val kivitelezett precíziós egyenrirányító a dióda feszültségesésének kiküszöbölésére.
     - LED / LED-ek optimális elhelyezése, hogy a szenzor végén lévő áttetsző részen több fény jusson ki.
 
 - Burkolat:
@@ -134,7 +135,7 @@ Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fo
     - Párakicsapódás elleni védelem.
 
 - Software
-    - Hosszabb alvási idő / rikább mérési ciklus.
+    - Hosszabb alvási idő / ritkább mérési ciklus.
     - Műszeres bemérés után a várakozási idők optimalizálása, ébrenléti idő csökkentése.
     - Központ MAC cím változtatásának megoldása vezeték nélkül.
     - Kimenő adatok titkosítása.
