@@ -20,7 +20,7 @@ A szenzorral szemben támasztott elvárásom, miszerint az legyen tartós, az eg
 [https://raspberrypi.stackexchange.com/questions/68133/is-soil-moisture-sensor-corrosion-normal](https://raspberrypi.stackexchange.com/questions/68133/is-soil-moisture-sensor-corrosion-normal)
 
 ### Hogyan működik ez a szenzortípus?
-A NYÁK-on létrehozott kiterített fegyverzetek és a forrasztásgátló maszk mint dielektrikum, egy kondenzátort alkotnak. Hogy ez a kondenzátor mekkora kapacitással bír, az függ a fegyverzetek méretétől, a közöttük lévő távolságtól és a dielektromos állandótól. Ezt a dielektromos állandót ($` \epsilon_r `$) hangolja el a környezet, jelen esetben a talaj és annak nedvességtartalma. 
+A NYÁK-on létrehozott kiterített fegyverzetek és a forrasztásgátló maszk mint dielektrikum egy kondenzátort alkotnak. Hogy ez a kondenzátor mekkora kapacitással bír, az függ a fegyverzetek méretétől, a közöttük lévő távolságtól és a dielektromos állandótól. Ezt a dielektromos állandót ($` \epsilon_r `$) hangolja el a környezet, jelen esetben a talaj és annak nedvességtartalma. 
 
 $$C = \epsilon_r \epsilon_0 \frac{A}{d}$$
 
@@ -33,7 +33,7 @@ Választható alternatíva lett volna még a saját NYÁK tervezése annak minde
 
 ## Hogyan lehet a szenzor vezeték nélküli és alacsony fogyasztású?
 
-Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan párszáz µA/MHz aktív üzemmódban, ezt még befolyásolhatják az egyéb használatban lévő perifériák. Viszont telepes üzemeltetéskor már jelentős fogyasztóvá válhat a mikrovezérlő és minden, a telepre kötött pár mA-es áramfelvétellel rendelkező szenzor, modul is.
+Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan pár száz µA/MHz aktív üzemmódban, ezt még befolyásolhatják az egyéb használatban lévő perifériák. Viszont telepes üzemeltetéskor már jelentős fogyasztóvá válhat a mikrovezérlő és minden, a telepre kötött pár mA-es áramfelvétellel rendelkező szenzor, modul is.
 
 ### Mi a fogyasztás csökkentésének stratégiája?
 - A mikrovezérlőn válasszunk optimális órajelet. Ha a feladathoz elégséges és van lehetőség alacsonyabb órajelet választani, tegyük azt.
@@ -61,7 +61,7 @@ Maguk a mikrokontrollerek alacsony fogyasztásúnak tekinthetőek, tipikusan pá
 - **Viszont:** Ha az ESP-vel állítom elő a négyszögjelet, akkor tudom, hogy mikor indult a négyszögjel! És ehhez tudok szinkronizálni. A processzor képes 160 MHz-en futni, ami azt jelenti, hogy egészen apró lépésekben a szinkrontól eltolva "végigtapogathatnám" a mérendő jelet más-más periódusba mintavételezve. Mivel a mérendő jel periodikus, az eredeti hullámforma visszaállítható több periódus felhasználásával, így ez egy lehetséges alternatíva. Az alkalmazott metódus neve: [Equivalent Time Sampling - ETS](https://wiki.analog.com/university/tools/m1k/alice/advanced-equivalent-time-sampling-guide)
 - Plot twist: Nem működik! :D Az ESP ADC-je nem rendelkezik kellő analóg sávszélességgel, így a négyszögjel rekonstruálása ezen a frekvencián nem volt lehetséges. ~500 kHz-ig volt felismerhető, hogy az ESP-vel négyszögjelet generáltam eredetileg. Ennek dokumentációja elmaradt.
 - Be kellett látnom, hogy ezekből az eszközökből nem tudok sokkal többet kihozni, mint amire eredeti formájukban képesek voltak. Szükség volt a diódára és az integrátor tagra, cserébe az ESP állította elő a négyszögjelet, így az első deszkamodell ebben a formában készült el.
-- Ugyanakkor nem hagyott nyugodni a tudat, hogy a gerjesztő frekvenciát én állítom be... Mi történik, ha nem 1,5 MHz környéki frekvenciát használok, hanem valami mást? Kisebbet, vagy nagyobbat. Sokkal kisebbet, vagy sokkal nagyobbat. Nyilván eltérő soros R tagra lenne szükség az eltérő frekvencia miatt, de ez milyen hatással van a talajra, a mérésre? Úgy gondoltam, ha az elektronikában a különböző helyeken az eltérő frekvenciáknak megvannak a sajátos vonzatai, akkor itt is lehet valami extra. De nem tudom, hogy mi. Megkérdeztem ~~mindenttudó~~ Geminit: **"... Tudok-e valamire következtetni, ha eltérő frekvenciákkal mérek?"**
+- Ugyanakkor nem hagyott nyugodni a tudat, hogy a gerjesztő frekvenciát én állítom be... Mi történik, ha nem 1,5 MHz környéki frekvenciát használok, hanem valami mást? Kisebbet, vagy nagyobbat. Sokkal kisebbet, vagy sokkal nagyobbat. Nyilván eltérő soros R-tagra lenne szükség az eltérő frekvencia miatt, de ez milyen hatással van a talajra, a mérésre? Úgy gondoltam, ha az elektronikában a különböző helyeken az eltérő frekvenciáknak megvannak a sajátos vonzatai, akkor itt is lehet valami extra. De nem tudom, hogy mi. Megkérdeztem ~~mindenttudó~~ Geminit: **"... Tudok-e valamire következtetni, ha eltérő frekvenciákkal mérek?"**
 - **A válasz:** "Mit tudsz kideríteni, ha eltérő frekvenciákkal mérsz? (A "Szent Grál")Ha ugyanazt a zónát megméred például $100 \text{ kHz}$-en, majd közvetlenül utána $2 \text{ MHz}$-en, egy fantasztikus dolgot tudsz megbecsülni: a talaj sótartalmát, azaz a tápanyag/műtrágya szintjét (EC - Electrical Conductivity)! Ezt a módszert dielektromos spektroszkópiának hívják.Ennek a jelenségnek az oka a vízben lévő ionok (sók, ásványi anyagok) viselkedése:Alacsony frekvencián (pl. $100 \text{ kHz}$): A PWM jel polaritásváltása elég "lassú" ahhoz, hogy a talajnedvességben lévő ionoknak legyen idejük elmozdulni a pozitív és negatív pólusok felé. Ilyenkor a szenzorod nemcsak a kapacitást, hanem a talaj vezetőképességét (ellenállását) is erősen méri. Ha a talaj sós/tápanyagdús, a mért érték drasztikusan megváltozik a tiszta vízhez képest.Magas frekvencián (pl. $2 \text{ MHz}$ felett): A tér olyan gyorsan váltakozik, hogy a nehéz ionok nem tudják követni a tempót, így mintegy "lemaradnak". Ezen a frekvencián a szenzor szinte kizárólag a víz dielektromos állandójára ($\epsilon_r \approx 80$) reagál, a sótartalom hatása minimális lesz. Tisztán a vízmennyiséget méred."
 
 - Ezután következett újabb trial and error, egy kis kutatómunka, mert nem azt kaptam, amit látni szerettem volna a méréseken. Teszteléshez poharakba készítettem különböző folyadékmintákat: csapvizet, ioncserélt vizet, híg és töményebb tápoldatos vizet. Viszont arányaiban nem láttam eltérést a két mérési frekvenciapár között. Magasabb frekvenciának 1,25 MHz, míg alacsonyabbnak 700 kHz és 100 kHz volt tesztelve. A visszakapott ADC eredmények alapján az látszódott, hogy a szenzor annak megállapítására volt csupán képes, hogy levegőn van-e teljesen, ioncserélt vízben van-e, vagy valamelyik másik tesztmintában. Utóbbiakat egyformának érzékelte. Sikerült rátalálnom erre a cikkre ami rámutatott, hogy a frekvenciatartományt nem jó irányban tesztelem. [https://metergroup.com/measurement-insights/soil-moisture-sensors-how-they-work-why-some-are-not-research-grade/](https://metergroup.com/measurement-insights/soil-moisture-sensors-how-they-work-why-some-are-not-research-grade/)
@@ -81,7 +81,7 @@ Az alacsonyabb frekvenciának meghagytam az 1,25 MHz-et a hardware kiépítése 
 ## Véglegesített kapcsolási rajz
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/schematic.JPG)
 
-Szerettem volna a tényleges akkumulátor feszültséget mérni, viszont az ehhez szükséges extra alkatrészek légszerelésével jelenleg nem akartam időt tölteni. A tápfeszültség ellenőrzése a következőképpen történik: A Li-ion akkumulátor a panel 5 V-os tápbemenetére csatlakozik. Ezen van egy [3,3 V-os ME6211](https://stm32-base.org/assets/pdf/regulators/ME6211.pdf) feszültségstabilizátor amely rendkívül alacsony, 0,1 V-os dropouttal rendelkezik. Ez azt jelenti, hogy ha az akkumulátor feszültsége leesik 3,4 V-ra, akkor a feszültségstabilizátor képes még a kimenetén biztosítani a 3,3 V-os feszültséget. Ezután ahogy csökken az akku feszültsége, a stabilizátor kimenetén is esni fog a feszültség. Ezt a feszültséget mérjük egy kapcsolható feszültségosztón át, ami a panelre integrált és hozzáadott 10kΩ ellenállásból épül fel. Az eddigi tapasztalatok alapján az így mért feszültségnek kisebb, mint 15 LSB változása van. Ez a környező zajokból és az alkatrészek hőmérsékletfüggéséből tevődik össze. Várhatóan, ha a stabilizátor kimenete 50mV-ot bezuhan az akkumulátor merülése miatt, a jelenleg mért értékek ~100-zal csökkenni fognak, így jól detektálható a kritikus tápfeszültség megléte.
+Szerettem volna a tényleges akkumulátor feszültséget mérni, viszont az ehhez szükséges extra alkatrészek légszerelésével jelenleg nem akartam időt tölteni. A tápfeszültség ellenőrzése a következőképpen történik: A Li-ion akkumulátor a panel 5 V-os tápbemenetére csatlakozik. Ezen van egy [3,3 V-os ME6211](https://stm32-base.org/assets/pdf/regulators/ME6211.pdf) feszültségstabilizátor, amely rendkívül alacsony, 0,1 V-os dropouttal rendelkezik. Ez azt jelenti, hogy ha az akkumulátor feszültsége leesik 3,4 V-ra, akkor a feszültségstabilizátor képes még a kimenetén biztosítani a 3,3 V-os feszültséget. Ezután ahogy csökken az akku feszültsége, a stabilizátor kimenetén is esni fog a feszültség. Ezt a feszültséget mérjük egy kapcsolható feszültségosztón át, ami a panelre integrált és hozzáadott 10 kΩ ellenállásból épül fel. Az eddigi tapasztalatok alapján az így mért feszültségnek kisebb, mint 15 LSB változása van. Ez a környező zajokból és az alkatrészek hőmérsékletfüggéséből tevődik össze. Várhatóan, ha a stabilizátor kimenete 50 mV-ot bezuhan az akkumulátor merülése miatt, a jelenleg mért értékek ~100-zal csökkenni fognak, így jól detektálható a kritikus tápfeszültség megléte.
 
 ## Építés
 A deszkamodell maradt a végleges forma, az extra alkatrészek a panelre lettek építve.
@@ -108,24 +108,24 @@ A software működéséről vázlatosan írok csak, a teljes software a [src map
 
 Ezzel a működéssel a szenzor átlagfogyasztása 500 µA környékén alakul, a használt 600 mAh-s akkumulátorral várhatóan 1,5 hónapot tud üzemelni.
 
-###### A központon vevőként funkcionáló ESP sorosporton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
+###### A központon vevőként funkcionáló ESP soros porton küldi ki az egységektől kapott adatokat, amiket egy Raspberry Pi 4 dolgoz fel, tárol el és biztosítja a megjelenítést webszerveren keresztül.
 ![https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png](https://github.com/zolee1209/ESP32_CapacitiveMoistureSensor/blob/main/pictures/datapoints.png)
 ###### | Lila: 40 MHz-en mért érték | Sárga: 1,25 MHz-en mért érték | Cián: Tápfeszültség
 
 
 ## Beavatkozás a mért adatok alapján
-A szenzor software-be szándékosan nem kerültek kalibrációs funkciók.
+A szenzor software-ébe szándékosan nem kerültek kalibrációs funkciók.
 - Ennek egyik oka, hogy abban az esetben a kalibrációs folyamatot is meg kellett volna oldani szenzor oldalon, ami a vízállóság biztosítására hivatott burkolást nehezítette volna, ha nyomógombot alkalmazok. Lehetett volna alkalmazni mágnest és Hall-szenzort egy pin beállítására, de az egyedi NYÁK hiánya miatt ezt elvetettem. Mivel az ESP-now kétirányú, az adatok elküldése után várhatok is vissza valamilyen értéket és annak függvényében irányítani a kalibrációs folyamatot. 
 - A másik ok, hogy a szenzor minden esetben egyedi helyre kerül. Lehet eltérő a talaj összetétele, minősége és tömörsége, így minden esetben szükséges az újrakalibráció. Viszont - ahogy esetemben is - a talaj tömörségének változása is hatással van a mért értékre. A tömörödés során változik a hasznos szenzorfelület és az aktív szenzorfelülettel kapcsolatban lévő talaj viszonya is, így nem határozható meg egy egzakt kapcsolási pont.
 
-Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fogom meghatározni, ott egyszerűbb ezt megvalósítani. Néhány öntözési ciklus után meg lehet határozni a növény számára optimális nedvességi értéket, majd azt automatikával tartani. Az öntözés megvalósítása egyelőre optikai visszacsatoláson alapszik: a monitoron, vagy a virágföldön látottak alapján :smile: .
+Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fogom meghatározni, ott egyszerűbb ezt megvalósítani. Néhány öntözési ciklus után meg lehet határozni a növény számára optimális nedvességi értéket, majd azt automatikával tartani. Az öntözés megvalósítása egyelőre optikai visszacsatoláson alapszik: a monitoron vagy a virágföldön látottak alapján :smile: .
 
 ## Fejlesztési lehetőségek
 - Egyedi NYÁK-terv:
     - Nagyobb szenzorfelület, vagy több zóna létrehozása.
     - A használt alkatrészek korrekt elhelyezése, figyelembe véve az alkalmazott frekvenciákat.
     - Napelemes tápláláshoz szükséges DC-DC konverter kiépítése.
-    - Szükség esetén a szenzor felület meghajtásának erősítése külső tranzisztorokkal.
+    - Szükség esetén a szenzorfelület meghajtásának erősítése külső tranzisztorokkal.
     - Külső nagysebességű ADC alkalmazása diódás egyenirányító helyett.
     - OPA-val kivitelezett precíziós egyenirányító a dióda feszültségesésének kiküszöbölésére.
     - LED / LED-ek optimális elhelyezése, hogy a szenzor végén lévő áttetsző részen több fény jusson ki.
@@ -137,7 +137,7 @@ Ezek miatt döntöttem úgy, hogy az öntözési jelzést a központi oldalon fo
 - Software
     - Hosszabb alvási idő / ritkább mérési ciklus.
     - Műszeres bemérés után a várakozási idők optimalizálása, ébrenléti idő csökkentése.
-    - Központ MAC cím változtatásának megoldása vezeték nélkül.
+    - Központ MAC-cím változtatásának megoldása vezeték nélkül.
     - Kimenő adatok titkosítása.
     - Központi oldalon védekezés a hamisított adatok ellen.
 
